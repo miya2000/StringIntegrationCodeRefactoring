@@ -107,6 +107,7 @@
     <Compile Include="TestHelper\CodeAnalysisHelper.cs" />
     <Compile Include="TestHelper\CodeRefactoringVerifier.cs" />
     <Compile Include="RoslynTest.cs" />
+    <Compile Include="StringIntegrationDemo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
