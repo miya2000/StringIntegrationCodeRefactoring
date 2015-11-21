@@ -24,21 +24,21 @@ namespace StringIntegrationCodeRefactoring
             if (node == null) return;
 
             //process string literal or interpolated string.
-            if (node.Kind() != SyntaxKind.StringLiteralExpression)
+            if (!node.IsKind(SyntaxKind.StringLiteralExpression))
             {
                 node = node.AncestorsAndSelf().OfType<InterpolatedStringExpressionSyntax>().FirstOrDefault();
             }
 
             if (node == null) return;
 
-            if (node.Kind() == SyntaxKind.StringLiteralExpression || node.Kind() == SyntaxKind.InterpolatedStringExpression)
+            if (node.IsKind(SyntaxKind.StringLiteralExpression) || node.IsKind(SyntaxKind.InterpolatedStringExpression))
             {
                 var tree = root.SyntaxTree;
                 var lines = tree.GetText().Lines;
 
                 // find add-expression in the same line (left end and right start).
                 var addExpression = node.Ancestors()
-                    .TakeWhile(n => n.Kind() == SyntaxKind.AddExpression)
+                    .TakeWhile(n => n.IsKind(SyntaxKind.AddExpression))
                     .Cast<BinaryExpressionSyntax>()
                     .TakeWhile(n => lines.GetLinePosition(n.Left.Span.End).Line == lines.GetLinePosition(n.Right.Span.Start).Line)
                     .LastOrDefault();
@@ -66,18 +66,18 @@ namespace StringIntegrationCodeRefactoring
 
         private ExpressionSyntax ToIntegratedString(ExpressionSyntax left, ExpressionSyntax right)
         {
-            if (left.Kind() == SyntaxKind.AddExpression)
+            if (left.IsKind(SyntaxKind.AddExpression))
             {
                 var add = left as BinaryExpressionSyntax;
                 left = ToIntegratedString(add.Left, add.Right);
             }
-            if (right.Kind() == SyntaxKind.AddExpression)
+            if (right.IsKind(SyntaxKind.AddExpression))
             {
                 var add = right as BinaryExpressionSyntax;
                 right = ToIntegratedString(add.Left, add.Right);
             }
 
-            if (left.Kind() == SyntaxKind.StringLiteralExpression && right.Kind() == SyntaxKind.StringLiteralExpression)
+            if (left.IsKind(SyntaxKind.StringLiteralExpression) && right.IsKind(SyntaxKind.StringLiteralExpression))
             {
                 var leftToken = ((LiteralExpressionSyntax)left).Token;
                 var rightToken = ((LiteralExpressionSyntax)right).Token;
@@ -124,7 +124,7 @@ namespace StringIntegrationCodeRefactoring
             // SyntaxFactory.Token(SyntaxKind.InterpolatedStringStartToken) contains WhitespaceTrivia annotated with SyntaxAnnotation.ElasticAnnotation.
             var startToken = SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.InterpolatedStringStartToken, "$\"", "$\"", SyntaxTriviaList.Empty);
 
-            if (expression.Kind() == SyntaxKind.StringLiteralExpression)
+            if (expression.IsKind(SyntaxKind.StringLiteralExpression))
             {
                 var token = ((LiteralExpressionSyntax)expression).Token;
 
